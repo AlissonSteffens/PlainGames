@@ -1,0 +1,153 @@
+<canvas id="game" width="800" height="600"></canvas>
+
+<script>
+    var canvas
+    var canvasContext
+    var p1, p2, ball
+    var margin = 10
+
+
+    window.onload = function () {
+        canvas = document.getElementById('game')
+        canvasContext = canvas.getContext('2d')
+        p1 = new Pine (0)
+        p2 = new Pine (canvas.width)
+        ball = new Ball()
+        setInterval(update, 1000/60)
+        canvasContext.font="42px Georgia";
+        canvas.addEventListener('mousemove', function(e){
+            p1.y = e.clientY - p1.height/2
+        })
+    }
+
+    function update () {
+        draw()
+        control()
+    }
+
+    function control () {
+        ball.update()
+        p2.runAi()
+    }
+
+    function draw () {
+        drawBg()
+        p1.render()
+        p2.render()
+        ball.render()
+        canvasContext.fillStyle = '#fff'
+        canvasContext.fillText(p1.score,margin*3,margin*3)
+        canvasContext.fillText(p2.score,canvas.width - margin*3,margin*3)
+    }
+
+    function drawBg () {
+        canvasContext.fillStyle = '#333'
+        canvasContext.fillRect(0,0,canvas.width, canvas.height)
+    }
+    
+    class Ball {
+
+        constructor () {
+            this.maxvel =  5
+            this.width = this.height = 10
+            this.reset()
+        }
+
+        reset () {
+            this.x = canvas.width/2 - this.width/2
+            this.y = canvas.height/2 - this.height/2
+            var r = ((Math.random()*2)-1)
+            if( r < 0 ){
+                this.vx = this.maxvel
+            }else{
+                this.vx = -this.maxvel
+            }
+            r = ((Math.random()*2)-1)
+            if( r < 0 ){
+                this.vy = this.maxvel
+            }else{
+                this.vy = -this.maxvel
+            }
+        }
+
+        render () {
+            canvasContext.fillStyle = '#f00'
+            canvasContext.fillRect(this.x,this.y,this.width, this.height)
+        }
+
+        update () {
+            this.x += this.vx
+            this.y += this.vy
+            if(this.x <= p1.x + p1.width){
+                if(this.checkColision(p1)) {
+                    this.vx = -this.vx
+                    this.x += this.vx
+                }else{
+                    p2.score++
+                    this.reset()
+                }
+            }
+            if(this.x >= p2.x){
+                if(this.checkColision(p2)) {
+                    this.vx = -this.vx
+                    this.x += this.vx
+                }else{
+                    p1.score++
+                    this.reset()
+                }
+            }
+            if(this.y < margin || this.y > canvas.height-margin){
+                this.vy = -this.vy
+                this.y += this.vy
+            }
+        }
+
+        checkColision (pine){
+            if(this.y + this.height > pine.y && this.y < pine.y + pine.height){
+                return true
+            }
+            return false
+        }
+    }
+    class Pine {
+
+        constructor (initialX) {
+            this.score = 0
+            this.vel = 5
+            this.width = 10
+            this.height = 50
+            this.x = initialX + margin
+            this.y = canvas.height/2 - this.height/2
+            if(this.x + this.width > canvas.width){
+                this.x = canvas.width - this.width - margin     
+            }
+        }
+
+        render () {
+            canvasContext.fillStyle = '#eee'
+            canvasContext.fillRect(this.x,this.y,this.width, this.height)
+        }
+
+        goUp () {
+            this.y -= this.vel
+            if(this.y < margin){
+                this.y = 0
+            }
+        }
+
+        goDown () {
+            this.y += this.vel
+            if(this.y > canvas.height - this.height - margin){
+                this.y = canvas.height - this.height
+            }
+        }
+
+        runAi () {
+            if(ball.y < this.y + this.height/2){
+                this.goUp()
+            }else if(ball.y > this.y + this.height/2){
+                this.goDown()
+            }
+        }
+    }
+</script>
