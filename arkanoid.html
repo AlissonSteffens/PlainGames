@@ -13,7 +13,7 @@
         player = new Pine()
         bricks = []
         for (var i = 0; i < canvas.width - collumn; i++) {
-            for (var j = 0; j < 3; j++) {
+            for (var j = 0; j < 5; j++) {
                 bricks.push(new Brick(i,j))        
             }
         }
@@ -92,7 +92,7 @@
         update () {
             this.x += this.vx
             this.y += this.vy
-            if(this.y > player.y && this.y < player.y + player.height && this.x > player.x && this.x < player.x + player.width){
+            if(this.y + this.height > player.y && this.y < player.y + player.height && this.x + this.width > player.x && this.x < player.x + player.width){
                 this.vy = -this.vy
                 this.y += this.vy
             }
