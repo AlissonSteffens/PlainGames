@@ -1,0 +1,144 @@
+<canvas id="game" width="800" height="600"></canvas>
+
+<script>
+    var canvas
+    var canvasContext
+    var p1, p2, ball
+    var margin = 10
+    var map
+    var snake
+    var apple
+    window.onload = function () {
+        canvas = document.getElementById('game')
+        canvasContext = canvas.getContext('2d')
+        map = new Map()
+        apple = new Apple()
+        snake = new Snake()
+        document.addEventListener('keydown',keyPush)
+        setInterval(update, 1000/15)
+    }
+
+    function keyPush(evt) {
+        switch(evt.keyCode) {
+            case 37:
+                if (snake.xv === 0) {
+                    snake.xv = -1
+                    snake.yv = 0
+                }
+                break;
+            case 38:
+                if (snake.yv === 0) {
+                    snake.xv = 0
+                    snake.yv = -1
+                }
+                break;
+            case 39:
+                if (snake.xv === 0) {
+                    snake.xv = 1
+                    snake.yv = 0
+                }
+                break;
+            case 40:
+                if (snake.yv === 0) {
+                    snake.xv = 0
+                    snake.yv = 1
+                }
+                break;
+        }
+    }
+
+    function update () {
+        draw()
+        control()
+    }
+
+    function control () {
+        snake.update()
+    }
+
+    function draw () {
+        map.render()
+        snake.render()
+        apple.render() 
+    }
+    class Map {
+        constructor () {            
+            this.tileSize = 20
+            this.w = canvas.width / this.tileSize
+            this.h = canvas.height / this.tileSize
+        }
+
+        render () {
+            canvasContext.fillStyle = '#333'
+            canvasContext.fillRect(0, 0, canvas.width, canvas.height)
+        }
+    }
+
+    class Snake {
+        constructor () {
+            this.reset ()
+        }
+
+        reset () {
+            this.xv = 0
+            this.yv = 0
+            this.x = map.w / 2
+            this.y = map.h / 2
+            this.tail = []
+            this.size = 5
+        }
+
+        update () {
+            console.log(this.size)
+            this.x += this.xv
+            this.y += this.yv
+            if(this.x < 0){
+                this.x = map.w - 1
+            }else if(this.x > map.w-1){
+                this.x = 0
+            }
+            if(this.y < 0){
+                this.y = map.h - 1
+            }else if(this.y > map.h-1){
+                this.y = 0
+            }
+            this.tail.push({ x:this.x, y:this.y })
+            for (var index = 0; index < this.tail.length-1; index++) {
+                if (this.tail[index].x === this.x && this.tail[index].y === this.y) {
+                    this.reset()
+                }
+            }
+            while (this.tail.length>this.size) {
+                this.tail.shift()
+            }
+            if (apple.x === this.x && apple.y === this.y) {
+                this.size++
+                apple.reset()
+            }       
+        }
+
+        render () {
+            canvasContext.fillStyle = '#eee'
+            for (var index = 0; index < this.tail.length; index++) {
+                canvasContext.fillRect(this.tail[index].x * map.tileSize, this.tail[index].y * map.tileSize, map.tileSize, map.tileSize)
+            }
+            
+        }
+    }
+
+    class Apple {
+        constructor () {
+            this.reset()
+        }
+
+        reset () {
+            this.x = Math.floor(Math.random()*map.w)
+            this.y = Math.floor(Math.random()*map.h)
+        }
+
+        render () {
+            canvasContext.fillStyle = '#e22'
+            canvasContext.fillRect(this.x * map.tileSize, this.y * map.tileSize, map.tileSize, map.tileSize)
+        }
+    }
+</script>
