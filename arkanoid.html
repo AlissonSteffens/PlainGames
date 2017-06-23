@@ -1,0 +1,175 @@
+<canvas id="game" width="800" height="600"></canvas>
+
+<script>
+    var canvas
+    var canvasContext
+    var ball, player, bricks
+    var collumn = 50
+
+    window.onload = function () {
+        canvas = document.getElementById('game')
+        canvasContext = canvas.getContext('2d')
+        ball = new Ball()
+        player = new Pine()
+        bricks = []
+        for (var i = 0; i < canvas.width - collumn; i++) {
+            for (var j = 0; j < 3; j++) {
+                bricks.push(new Brick(i,j))        
+            }
+        }
+        
+        canvas.addEventListener('mousemove', function(e){
+            player.x = e.clientX - player.width/2
+        })
+        setInterval(update, 1000/60)
+    }
+
+    function update () {
+        draw()
+        control()
+    }
+
+    function control () {
+        ball.update()
+        for (var index = 0; index < bricks.length; index++) {
+            if(bricks[index].isAlive){
+                bricks[index].update()
+            }
+        }
+    }
+
+    function draw () {
+        drawBg()
+        player.render()
+        ball.render()
+        for (var index = 0; index < bricks.length; index++) {
+            if(bricks[index].isAlive){
+                bricks[index].render()
+            }
+        }
+    }
+
+    function drawBg () {
+        canvasContext.fillStyle = '#333'
+        canvasContext.fillRect(0,0,canvas.width, canvas.height)
+    }
+    
+    class Ball {
+
+        constructor () {
+            this.maxvel =  5
+            this.width = this.height = 10
+            this.reset()
+        }
+
+        reset () {
+            this.x = canvas.width/2 - this.width/2
+            this.y = canvas.height/2 - this.height/2
+            var r = ((Math.random()*2)-1)
+            if( r < 0 ){
+                this.vx = this.maxvel
+            }else{
+                this.vx = -this.maxvel
+            }
+            r = ((Math.random()*2)-1)
+            if( r < 0 ){
+                this.vy = this.maxvel
+            }else{
+                this.vy = -this.maxvel
+            }
+        }
+
+        render () {
+            canvasContext.fillStyle = '#f00'
+            canvasContext.fillRect(this.x,this.y,this.width, this.height)
+        }
+
+        bounce () {
+            this.vy = -this.vy
+            this.y += this.vy
+        }
+
+        update () {
+            this.x += this.vx
+            this.y += this.vy
+            if(this.y > player.y && this.y < player.y + player.height && this.x > player.x && this.x < player.x + player.width){
+                this.vy = -this.vy
+                this.y += this.vy
+            }
+            // Margin
+            if(this.y < 0){
+                this.vy = -this.vy
+                this.y += this.vy
+            }
+            if(this.x < 0 || this.x + this.width > canvas.width){
+                this.vx = -this.vx
+                this.x += this.vx
+            }
+        }
+
+        
+    }
+    class Pine {
+
+        constructor () {
+            this.score = 0
+            this.vel = 5
+            this.width = collumn
+            this.height = 10
+            this.x = canvas.width/2 - this.width/2
+            this.y = canvas.height-collumn
+        }
+
+        render () {
+            canvasContext.fillStyle = '#eee'
+            canvasContext.fillRect(this.x,this.y,this.width, this.height)
+        }
+
+        goLeft () {
+            this.x -= this.vel
+            if(this.x < 0){
+                this.x = 0
+            }
+        }
+
+        goRight () {
+            this.x += this.vel
+            if(this.x > canvas.width - this.width){
+                this.x = canvas.width - this.width
+            }
+        }
+    }
+
+    class Brick {
+        constructor (x,y) {
+            this.isAlive = true
+            this.width = collumn
+            this.height = 20
+            this.color = getRandomColor()
+            this.x = x * this.width
+            this.y = y * this.height
+        }
+
+        render () {
+            canvasContext.fillStyle = this.color
+            canvasContext.fillRect(this.x,this.y,this.width, this.height)
+        }
+
+        update (){
+            if(this.y + this.height > ball.y && this.y < ball.y + ball.height && this.x + this.width > ball.x && this.x < ball.x + ball.width){
+                this.isAlive = false
+                ball.bounce()
+            }
+        }
+
+    }
+
+    function getRandomColor() {
+        var letters = '0123456789ABCDEF';
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+</script>
