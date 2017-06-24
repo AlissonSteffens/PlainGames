@@ -1,0 +1,154 @@
+<canvas id="game" width="800" height="600"></canvas>
+
+<script>
+    var canvas
+    var canvasContext
+    var player, map
+
+    window.onload = function () {
+        canvas = document.getElementById('game')
+        canvasContext = canvas.getContext('2d')
+        map = new Map()
+        player = new Player()
+        document.addEventListener('keydown',keyPush)
+        canvasContext.font="42px Georgia";
+        setInterval(update, 1000/60)
+    }
+
+    function keyPush(evt) {
+        switch(evt.keyCode) {
+            case 37:
+                // left
+                break;
+            case 38:
+                player.jump()
+                break;
+            case 39:
+                // right
+                break;
+            case 40:
+                // down
+                break;
+        }
+    }
+    function update () {
+        draw()
+        control()
+    }
+
+    function control () {
+        player.update()
+        map.update()
+    }
+
+    function draw () {
+        drawBg()
+        player.render()
+        map.render()
+        canvasContext.fillStyle = '#fff'
+        canvasContext.fillText(Math.floor(player.score),30,50)
+        canvasContext.fillText('★',canvas.width-150,50)
+        canvasContext.fillText(Math.floor(player.bestScore),canvas.width-100,50)
+    }
+
+    function drawBg () {
+        canvasContext.fillStyle = '#84D2D5'
+        canvasContext.fillRect(0,0,canvas.width, canvas.height)
+    }
+
+    class Pipe{
+        constructor(){
+            this.x = canvas.width
+            this.height = Math.floor(Math.random()*100)+ 100
+            this.y = canvas.height/2 - this.height/2
+            this.width = 15
+        }
+        render () {
+            canvasContext.fillRect(this.x,0,this.width, this.y-player.height)
+            canvasContext.fillRect(this.x,this.y+this.height+player.height,this.width, canvas.height -(this.y+this.height) )
+        }
+
+        update(){
+            this.x--
+        }
+    }
+
+    class Map{
+        constructor(){
+            this.lifeConst = 0.05
+            this.pipes = []
+            this.pipes.push(new Pipe())
+        }
+        render () {
+            canvasContext.fillStyle = '#7CBF39'
+            for (var index = 0; index < this.pipes.length; index++) {
+                this.pipes[index].render()
+            }
+        }
+
+        update(){
+            if (this.pipes.length < 5 && this.pipes[this.pipes.length-1].x < canvas.width - canvas.width/5) {
+                if (Math.random() < this.lifeConst){
+                    this.pipes.push(new Pipe())    
+                }
+            }
+
+            for (var index = 0; index < this.pipes.length; index++) {
+                if (this.pipes[index].x < player.x + player.width && this.pipes[index].x + this.pipes[index].width > player.x) {
+                    if(this.pipes[index].y < player.y + player.height && this.pipes[index].y + this.pipes[index].height > player.y){
+
+                    }
+                    else{
+                        map = new Map()
+                        if (player.bestScore < player.score) {
+                            player.bestScore = player.score
+                        }
+                        player.score = 0
+                        continue
+                    }
+                    
+                }
+                if (this.pipes[index].x < 0) {
+                    this.pipes.splice(index , 1)
+                    index--
+                }else{
+                    this.pipes[index].update()
+                }
+            }
+        }
+    }
+    
+    class Player {
+
+        constructor () {
+            this.bestScore = 0
+            this.score = 0
+            this.width = 20
+            this.height = 20
+            this.x = canvas.width/4 - this.width/2
+            this.y = canvas.width/2 - this.height/2
+            this.vy = 0
+            this.accel = 0.5
+        }
+
+        jump () {
+            this.vy = -15
+        }
+
+        render () {
+            canvasContext.fillStyle = '#F3AE2A'
+            canvasContext.fillRect(this.x,this.y,this.width, this.height)
+        }
+
+        update () {
+            this.score += 0.1
+            this.vy += this.accel
+            this.y += this.vy
+            if (this.y > canvas.height - this.height){
+                this.y = canvas.height - this.height
+                this.vy = 0
+                this.jumping = false
+            }
+        }
+    }
+</script>
