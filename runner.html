@@ -46,7 +46,9 @@
         player.render()
         map.render()
         canvasContext.fillStyle = '#fff'
-        canvasContext.fillText(Math.floor(player.score),30,30)
+        canvasContext.fillText(Math.floor(player.score),30,50)
+        canvasContext.fillText('★',canvas.width-150,50)
+        canvasContext.fillText(Math.floor(player.bestScore),canvas.width-100,50)
     }
 
     function drawBg () {
@@ -59,7 +61,7 @@
             this.x = canvas.width
             this.height = Math.floor(Math.random()*20)+10
             this.y = canvas.height - floor - this.height
-            this.width = 20
+            this.width = Math.floor(Math.random()*20)+10
         }
         render () {
             canvasContext.fillRect(this.x,this.y,this.width, this.height)
@@ -95,6 +97,9 @@
             for (var index = 0; index < this.pipes.length; index++) {
                 if (this.pipes[index].x < player.x + player.width && this.pipes[index].x + this.pipes[index].width > player.x && this.pipes[index].y < player.y + player.height && this.pipes[index].y + this.pipes[index].height > player.y) {
                     map = new Map()
+                    if (player.bestScore < player.score) {
+                        player.bestScore = player.score
+                    }
                     player.score = 0
                     continue
                 }
@@ -111,6 +116,7 @@
     class Player {
 
         constructor () {
+            this.bestScore = 0
             this.score = 0
             this.width = 10
             this.height = 20
