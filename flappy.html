@@ -59,9 +59,9 @@
     class Pipe{
         constructor(){
             this.x = canvas.width
-            this.height = Math.floor(Math.random()*100)+ 100
+            this.height = Math.floor(Math.random()*300)+ 50
             this.y = canvas.height/2 - this.height/2
-            this.width = 15
+            this.width = Math.floor(Math.random()*15)+ 15
         }
         render () {
             canvasContext.fillRect(this.x,0,this.width, this.y-player.height)
@@ -75,7 +75,7 @@
 
     class Map{
         constructor(){
-            this.lifeConst = 0.05
+            this.lifeConst = 0.005
             this.pipes = []
             this.pipes.push(new Pipe())
         }
@@ -92,6 +92,7 @@
                     this.pipes.push(new Pipe())    
                 }
             }
+            
 
             for (var index = 0; index < this.pipes.length; index++) {
                 if (this.pipes[index].x < player.x + player.width && this.pipes[index].x + this.pipes[index].width > player.x) {
@@ -132,7 +133,7 @@
         }
 
         jump () {
-            this.vy = -15
+            this.vy = -12
         }
 
         render () {
@@ -147,7 +148,10 @@
             if (this.y > canvas.height - this.height){
                 this.y = canvas.height - this.height
                 this.vy = 0
-                this.jumping = false
+            }
+            if(this.y < 0){
+                this.y = 0
+                this.vy = 0
             }
         }
     }
