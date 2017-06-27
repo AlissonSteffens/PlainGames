@@ -1,0 +1,104 @@
+<canvas id="game" width="600" height="600"></canvas>
+
+<script>
+    var canvas
+    var canvasContext
+    var image
+    var size = 3
+    var board = [size]
+    var tile = 600/size
+    var image
+
+    window.onload = function () {
+        canvas = document.getElementById('game')
+        canvasContext = canvas.getContext('2d')
+        for (var i = 0; i < size; i++) {
+            board[i] = [size]
+        }
+        var ct = 0
+        for (var i = 0; i < size; i++) {
+            for (var j = 0; j < size; j++) {
+                board[i][j] = ct
+                ct++
+            }
+        }
+        shuffle(board)
+        image = new Image()
+        image.src = 'resources/fate.jpg';
+        canvas.addEventListener('mousedown',mouseController)
+        setInterval(update, 1000/60)
+    }
+
+    function shuffle(a) {
+        for (var i = a.length - 1; i > 0; i--) {
+            for (var j = a[i].length - 1; j > 0; j--) {
+                var m = Math.floor(Math.random()*size)
+                var n = Math.floor(Math.random()*size)
+
+                var temp = a[i][j];
+                a[i][j] = a[m][n];
+                a[m][n] = temp;
+            }
+        }
+    }
+
+    function mouseController(e){
+        var i = Math.floor(e.clientY/tile)
+        var j = Math.floor(e.clientX/tile)
+        var aux
+        if(i>0){
+            if(board[i-1][j] === 0){
+                aux = board[i-1][j]
+                board[i-1][j] = board[i][j]
+                board[i][j] = aux
+            }
+        }
+        if(i<size-1){
+            if (board[i+1][j] === 0) {
+                aux = board[i+1][j]
+                board[i+1][j] = board[i][j]
+                board[i][j] = aux
+            }
+        }
+        if(j>0){
+            if(board[i][j-1] === 0){
+                aux = board[i][j-1]
+                board[i][j-1] = board[i][j]
+                board[i][j] = aux
+            }
+        }
+        if(j<size-1){
+            if (board[i][j+1] === 0) {
+                aux = board[i][j+1]
+                board[i][j+1] = board[i][j]
+                board[i][j] = aux
+            }
+        }         
+    }
+    function update () {
+        draw()
+        control()
+    }
+
+    function control () {
+    }
+
+    function draw () {
+        drawBg()
+        canvasContext.fillStyle = '#fff'        
+        for (var i = 0; i < size; i++) {
+            for (var j = 0; j < size; j++) {
+                if(board[i][j]!= 0){
+                    canvasContext.drawImage(image, (board[i][j]%size) * tile, Math.floor(board[i][j] /size) * tile, tile, tile, j * tile, i * tile, tile, tile )
+                }
+                
+                // board[i][j]
+            }
+        }
+    }
+
+    function drawBg () {
+        canvasContext.fillStyle = '#333'
+        canvasContext.fillRect(0,0,canvas.width, canvas.height)
+    }
+</script>
