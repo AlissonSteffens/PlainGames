@@ -1,0 +1,132 @@
+<canvas id="game" width="600" height="600"></canvas>
+
+<script>
+    var canvas
+    var canvasContext
+    var image
+    var size = 5
+    var colors = ['#3498db', '#f39c12', '#e74c3c', '#9b59b6']
+    var icons = ['☁', '☀', '❤', '❀']
+    var board = [size]
+    var tile = 600/size
+    var hasSelected = false
+    var selI, selJ
+    var score = 0
+
+    window.onload = function () {
+        canvas = document.getElementById('game')
+        canvasContext = canvas.getContext('2d')
+        for (var i = 0; i < size; i++) {
+            board[i] = [size]
+        }
+        for (var i = 0; i < size; i++) {
+            for (var j = 0; j < size; j++) {
+                board[i][j] = Math.floor(Math.random()*icons.length)
+            }
+        }
+        canvasContext.font="50px Arial";
+        canvas.addEventListener('mousedown',mouseController)
+        setInterval(update, 1000/60)
+    }
+
+    function mouseController(e){
+        var i = Math.floor(e.clientY/tile)
+        var j = Math.floor(e.clientX/tile)
+        var aux
+        if(hasSelected){
+            if((selI === i && selJ === j-1) || (selI === i && selJ === j+1) || (selI === i-1 && selJ === j) || (selI === i+1 && selJ === j)){
+                aux = board[selI][selJ]
+                board[selI][selJ] = board[i][j]
+                board[i][j] = aux
+                hasSelected = false
+            }else{
+                selI = i
+                selJ = j
+            }
+        }else{
+            selI = i
+            selJ = j
+            hasSelected = true
+        }
+    }
+    function update () {
+        draw()
+        control()
+    }
+    function match() {
+        for (var i = 0; i < size-2; i++) {
+            for (var j = 0; j < size; j++) {
+                if(board[i][j] != -1){
+                    if(board[i][j] === board[i+1][j] && board[i+1][j] === board[i+2][j]){
+                        board[i][j] = board[i+1][j] = board[i+2][j] = -1
+                        score++
+                    }
+                }
+            }
+        }
+        for (var i = 0; i < size; i++) {
+            for (var j = 0; j < size-2; j++) {
+                if(board[i][j] != -1){
+                    if(board[i][j] === board[i][j+1] && board[i][j+1] === board[i][j+2]){
+                        board[i][j] = board[i][j+1] = board[i][j+2] = -1
+                        score++
+                    }
+                }
+            }
+        }
+    }
+    function gravity () {
+        var aux
+        var count = 0
+        console.log('g')
+        for (var i = size-2; i >= 0 ; i--) {
+            for (var j = 0; j < size; j++) {
+                if(board[i+1][j] === -1){
+                    aux = board[i+1][j]
+                    board[i+1][j] = board[i][j]
+                    board[i][j] = aux
+                    count++
+                }
+            }
+        }
+        
+    }
+    function complete () {
+        for (var i = 0; i < size; i++) {
+            for (var j = 0; j < size; j++) {
+                if(board[i][j] === -1){
+                    board[i][j] = Math.floor(Math.random()*icons.length)
+                }
+                
+            }
+        }
+    }
+    function control () {
+        match()
+        gravity ()
+        complete ()
+    }
+
+    function draw () {
+        drawBg()
+        canvasContext.fillStyle = '#fff'        
+        for (var i = 0; i < size; i++) {
+            for (var j = 0; j < size; j++) {
+                if(board[i][j]!= -1){
+                    canvasContext.fillStyle = colors[board[i][j]]
+                    // canvasContext.fillRect(j*tile,i*tile,tile, tile)
+                    // canvasContext.fillStyle = '#fff'
+                    canvasContext.fillText(icons[board[i][j]],40+j*tile,80+i*tile)
+                }
+                
+            }
+        }
+        canvasContext.fillStyle = '#fff'
+        canvasContext.fillText(score,10,40)
+    }
+
+    function drawBg () {
+        canvasContext.fillStyle = '#333'
+        canvasContext.fillRect(0,0,canvas.width, canvas.height)
+    }
+</script>
