@@ -58,8 +58,20 @@
             for (var j = 0; j < size; j++) {
                 if(board[i][j] != -1){
                     if(board[i][j] === board[i+1][j] && board[i+1][j] === board[i+2][j]){
-                        board[i][j] = board[i+1][j] = board[i+2][j] = -1
-                        score++
+                        if(i < size-3 && board[i+3][j] === board[i+2][j]){
+                            if(i < size-4 && board[i+4][j] === board[i+3][j]){
+                                board[i][j] = board[i+1][j] = board[i+2][j] = board[i+3][j] = board[i+4][j] = -1
+                                score += 100
+                            }else{
+                                board[i][j] = board[i+1][j] = board[i+2][j] = board[i+3][j] = -1
+                                score += 10
+                            }
+                            
+                        }else{
+                            board[i][j] = board[i+1][j] = board[i+2][j] = -1
+                            score++
+                        }
+                        
                     }
                 }
             }
@@ -68,8 +80,20 @@
             for (var j = 0; j < size-2; j++) {
                 if(board[i][j] != -1){
                     if(board[i][j] === board[i][j+1] && board[i][j+1] === board[i][j+2]){
-                        board[i][j] = board[i][j+1] = board[i][j+2] = -1
-                        score++
+                        if(j < size-3 && board[i][j+3] === board[i][j+2]){
+                            if(j < size-4 && board[i][j+4] === board[i][j+3]){
+                                board[i][j] = board[i][j+1] = board[i][j+2] = board[i][j+3] = board[i][j+4] = -1
+                                score+=100
+                            }else{
+                                board[i][j] = board[i][j+1] = board[i][j+2] = board[i][j+3] = -1
+                                score+=10
+                            }
+
+                        }else{
+                            board[i][j] = board[i][j+1] = board[i][j+2] = -1
+                            score++
+                        }
+                        
                     }
                 }
             }
@@ -78,15 +102,20 @@
     function gravity () {
         var aux
         var count = 0
-        for (var i = size-2; i >= 0 ; i--) {
-            for (var j = 0; j < size; j++) {
-                if(board[i+1][j] === -1){
-                    aux = board[i+1][j]
-                    board[i+1][j] = board[i][j]
-                    board[i][j] = aux
-                    count++
+        for (var j = 0; j < size; j++) {
+            for (var i = 0; i < size-1; i++) {
+                if(board[i][j] !== -1){
+                    if(board[i+1][j] === -1){
+                        aux = board[i+1][j]
+                        board[i+1][j] = board[i][j]
+                        board[i][j] = aux
+                        count++
+                    }
                 }
             }
+        }
+        if(count !== 0){
+            gravity ()
         }
         
     }
