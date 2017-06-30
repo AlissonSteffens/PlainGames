@@ -1,0 +1,86 @@
+<canvas id="game" width="600" height="600"></canvas>
+
+<script>
+    var canvas
+    var canvasContext
+    var score = 0
+    var all = 0
+
+    var p = 0
+    var l = 0
+    var plays = ['✊', '✋', '✌']
+    var key = ['<', '^', '>']
+    
+    window.onload = function () {
+        canvas = document.getElementById('game')
+        canvasContext = canvas.getContext('2d')
+        document.addEventListener('keydown',keyPush)
+        setInterval(update, 1000/60)
+    }
+
+    function keyPush(evt) {
+        p = Math.floor(Math.random()*3)
+        switch(evt.keyCode) {
+            case 37:
+                if (p === 2) {
+                    score++
+                }
+                l = 0
+                all++
+                break;
+            case 38:
+                if (p === 0) {
+                    score++
+                }
+                l = 1
+                all++
+                break;
+            case 39:
+                l = 2
+                all++
+                if (p === 1) {
+                    score++
+                    
+                }
+                break;
+            case 40:
+                // if (snake.yv === 0) {
+                //     snake.xv = 0
+                //     snake.yv = 1
+                // }
+                break;
+        }
+    }
+
+    function update () {
+        draw()
+        control()
+    }
+    function control () {
+                
+    }
+
+    function draw () {
+        drawBg()
+        canvasContext.fillStyle = '#fff'
+        canvasContext.font="50px Arial"
+        for (var index = 0; index < plays.length; index++) {
+            canvasContext.fillText(key[index],index*(canvas.width/3)+60,canvas.height-90)
+            canvasContext.fillText(plays[index],index*(canvas.width/3)+50,canvas.height-50)
+        }
+
+        canvasContext.font="150px Arial"
+        canvasContext.fillText(plays[p],canvas.width/2-75,150)
+        canvasContext.fillText(plays[l],canvas.width/2-75,400)
+
+        canvasContext.font="50px Arial"
+        canvasContext.fillText(score+' / '+all,30,60)
+    }
+
+    function drawBg () {
+        canvasContext.fillStyle = '#333'
+        canvasContext.fillRect(0,0,canvas.width, canvas.height)
+    }
+    
+    
+</script>
