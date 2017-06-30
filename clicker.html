@@ -1,0 +1,116 @@
+<canvas id="game" width="800" height="600"></canvas>
+
+<script>
+    var canvas
+    var canvasContext
+    var up = 0
+    var score = 0
+    var cookie
+    var lvl
+    var d = new Date()
+    var last = d.getTime()
+
+    window.onload = function () {
+        canvas = document.getElementById('game')
+        canvasContext = canvas.getContext('2d')
+        
+        canvas.addEventListener('mousedown',mouseController)
+        canvas.addEventListener('mouseup',mouseDecontroller)
+        cookie = new Cookie()
+        lvl = new Level()
+        setInterval(update, 1000/60)
+    }
+    function mouseDecontroller(e){
+        if(cookie.click){
+            score++
+            cookie.click = false
+        }
+    }
+    function mouseController(e){
+        var y = e.clientY
+        var x = e.clientX
+        if(Math.sqrt((x-cookie.x)*(x-cookie.x) + (y-cookie.y)*(y-cookie.y)) < cookie.r){
+            cookie.click = true
+        }
+
+        if(y>lvl.y && y<(lvl.y+lvl.h) && x>lvl.x && x<(lvl.x+lvl.w)){
+            if(score >= lvl.next){
+                lvl.lv++
+                score-=lvl.next
+                lvl.next = lvl.next*lvl.next
+            }
+        }
+        
+    }
+
+    function update () {
+        draw()
+        control()
+    }
+    function control () {
+        d = new Date()
+        if(d.getTime() - last > 1000){
+            score+=lvl.lv
+            last = d.getTime()
+        }
+        
+    }
+
+    function draw () {
+        drawBg()
+        cookie.draw()
+        lvl.draw()
+        canvasContext.fillStyle = '#fff'
+        canvasContext.fillText(score,30,60)
+    }
+
+    function drawBg () {
+        canvasContext.fillStyle = '#333'
+        canvasContext.fillRect(0,0,canvas.width, canvas.height)
+    }
+    
+    class Level {
+        constructor () {
+            this.x = canvas.width-60
+            this.y = 60
+            this.w = 50
+            this.h = 30
+            this.c = '⏶'
+            this.color = '#eee'
+            this.click = false
+            this.lv = 0
+            this.next = 4
+        }
+        draw(){
+            canvasContext.fillStyle = this.color
+            //canvasContext.fillRect(this.x,this.y,this.w,this.h)
+            canvasContext.font="20px Arial"
+            canvasContext.fillText(this.next,this.x-20,this.y-10)
+            canvasContext.font="50px Arial"
+            canvasContext.fillText(this.c,this.x,this.y+20)
+            canvasContext.fillText(this.lv,this.x,this.y+60)
+        }
+    }
+
+    class Cookie{
+        constructor () {
+            this.x = canvas.width/2
+            this.y = canvas.height/2
+            this.r = canvas.height/3
+            this.color = '#A07237'
+            this.click = false
+        }
+
+        draw(){
+            canvasContext.beginPath()
+            canvasContext.arc(this.x, this.y, this.r, 0, 2 * Math.PI, false)
+            canvasContext.fillStyle = this.color
+            canvasContext.fill()
+            if(cookie.click){
+                canvasContext.lineWidth = 10
+                canvasContext.strokeStyle = '#8C5423'
+                canvasContext.stroke()
+            }
+        }
+    }
+</script>
