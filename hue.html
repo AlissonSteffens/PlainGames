@@ -1,0 +1,81 @@
+<canvas id="game" width="600" height="600"></canvas>
+
+<script>
+    var canvas
+    var canvasContext
+    var image
+    var size = 5
+    var colors = ['#3498db', '#f39c12', '#e74c3c', '#9b59b6']
+    var board = [size]
+    var tile = 600/size
+    var hasSelected = false
+    var selI, selJ
+    var hI, hJ
+    var score = 0
+    window.onload = function () {
+        canvas = document.getElementById('game')
+        canvasContext = canvas.getContext('2d')
+        for (var i = 0; i < size; i++) {
+            board[i] = [size]
+        }
+		
+		
+		var count = 0
+        
+		for (var i = 0; i < size; i++) {
+            for (var j = 0; j < size; j++) {
+                board[i][j] = count
+				count++
+            }
+        }
+		
+		
+        canvasContext.font="50px Arial";
+        canvas.addEventListener('mousedown',mouseController)
+        canvas.addEventListener('mousemove',mouseMoveController)
+        setInterval(update, 1000/60)
+    }
+    
+    function mouseMoveController(e){
+        var i = Math.floor(e.clientY/tile)
+        var j = Math.floor(e.clientX/tile)
+        hI = i
+        hJ = j
+    }
+    
+    function mouseController(e){
+        var i = Math.floor(e.clientY/tile)
+        var j = Math.floor(e.clientX/tile)
+        
+        var aux
+        
+    }
+    function update () {
+        draw()
+        control()
+    }
+    function match() {
+        
+    }
+    
+    function control () {
+    }
+    function draw () {
+        drawBg()
+		var total = size*size
+		var angle = 360/total
+		
+        for (var i = 0; i < size; i++) {
+            for (var j = 0; j < size; j++) {
+				canvasContext.fillStyle = 'hsl('+board[i][j]*angle+', 100%, 50%)'
+                canvasContext.fillRect(j*tile, i*tile, tile, tile)
+            }
+        }
+        canvasContext.fillStyle = '#fff'
+        canvasContext.fillText(score,10,40)
+    }
+    function drawBg () {
+        canvasContext.fillStyle = '#333'
+        canvasContext.fillRect(0,0,canvas.width, canvas.height)
+    }
+</script>
