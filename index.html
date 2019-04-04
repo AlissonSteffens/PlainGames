@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        
+        <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+        <link href="https://unpkg.com/nes.css/css/nes.css" rel="stylesheet" />
+
+        <style>
+        html, body, pre, code, kbd, samp, p, h1, h2, h3, h4 {
+            font-family: 'Press Start 2P', cursive;
+        }
+        .container{
+            padding: 5% 20%;
+        }
+        .nes-btn.btn-play {
+            position: absolute;
+            font-size: 12px;
+            bottom: 0px;
+            right: -4px;
+        }
+        </style>
+
+        <title>Hello, world!</title>
+    </head>
+    <body>
+        <div class="container">
+                <section class="topic">
+                    <h2><a href="#">#</a>Plain Games</h2>
+                </section>
+                <p>Some vanilla js games</p>
+
+                <section class="nes-container with-title">
+                    <h3 class="title">Games</h3>
+                    
+                    <div class="item">
+                        <label>
+                            <input type="radio" class="nes-radio" name="answer" value="arkanoid" checked="">
+                            <span>arkanoid</span>
+                        </label>
+                        <label>
+                            <input type="radio" class="nes-radio" name="answer" value="clicker" checked="">
+                            <span>clicker</span>
+                        </label>
+                        <label>
+                            <input type="radio" class="nes-radio" name="answer" value="flappy" checked="">
+                            <span>flappy</span>
+                        </label>
+                        <label>
+                            <input type="radio" class="nes-radio" name="answer" value="gem" checked="">
+                            <span>gem</span>
+                        </label>
+                        <label>
+                            <input type="radio" class="nes-radio" name="answer" value="hue" checked="">
+                            <span>hue</span>
+                        </label>
+                        <label>
+                            <input type="radio" class="nes-radio" name="answer" value="jokenpo" checked="">
+                            <span>jokenpo</span>
+                        </label>
+                        <label>
+                            <input type="radio" class="nes-radio" name="answer" value="pong" checked="">
+                            <span>pong</span>
+                        </label>
+                        <label>
+                            <input type="radio" class="nes-radio" name="answer" value="runner" checked="">
+                            <span>runner</span>
+                        </label>
+                        <label>
+                            <input type="radio" class="nes-radio" name="answer" value="slidepuzzle" checked="">
+                            <span>slidepuzzle</span>
+                        </label>
+                        <label>
+                            <input type="radio" class="nes-radio" name="answer" value="snake" checked="">
+                            <span>snake</span>
+                        </label>
+                    </div>
+                    <button type="button" id="play" class="nes-btn is-primary btn-play">&lt; Play &gt;</button>
+                </section>
+        </div>
+        
+
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script>
+            $( "#play" ).click(function() {
+                var radioValue = $("input[name='answer']:checked").val();
+                window.location.href = "./"+radioValue+".html";
+            });
+        </script>
+    </body>
+</html>
