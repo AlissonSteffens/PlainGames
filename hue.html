@@ -4,38 +4,52 @@
     var canvas
     var canvasContext
     var image
-    var size = 5
-    var colors = ['#3498db', '#f39c12', '#e74c3c', '#9b59b6']
+    var size = 3
     var board = [size]
     var tile = 600/size
+    var image
+
     var hasSelected = false
     var selI, selJ
     var hI, hJ
     var score = 0
+    
+    var lvl1 = [['#ecf55c','#ff896c','#ff0083'],['#58e09a','#8c7e8e','#a40085'],['#00c3d7','#006aad','#460085']]
+
     window.onload = function () {
         canvas = document.getElementById('game')
         canvasContext = canvas.getContext('2d')
         for (var i = 0; i < size; i++) {
             board[i] = [size]
         }
-		
-		
-		var count = 0
-        
-		for (var i = 0; i < size; i++) {
+        var ct = 0
+        for (var i = 0; i < size; i++) {
             for (var j = 0; j < size; j++) {
-                board[i][j] = count
-				count++
+                board[i][j] = ct
+                ct++
             }
         }
-		
-		
-        canvasContext.font="50px Arial";
+        shuffle(board)
+        image = new Image()
+        image.src = 'resources/fate.jpg';
         canvas.addEventListener('mousedown',mouseController)
         canvas.addEventListener('mousemove',mouseMoveController)
         setInterval(update, 1000/60)
     }
-    
+
+    function shuffle(a) {
+        for (var i = a.length - 1; i > 0; i--) {
+            for (var j = a[i].length - 1; j > 0; j--) {
+                var m = Math.floor(Math.random()*size)
+                var n = Math.floor(Math.random()*size)
+
+                var temp = a[i][j];
+                a[i][j] = a[m][n];
+                a[m][n] = temp;
+            }
+        }
+    }
+
     function mouseMoveController(e){
         var i = Math.floor(e.clientY/tile)
         var j = Math.floor(e.clientX/tile)
@@ -43,37 +57,63 @@
         hJ = j
     }
     
+
     function mouseController(e){
         var i = Math.floor(e.clientY/tile)
         var j = Math.floor(e.clientX/tile)
         
         var aux
+        if(hasSelected){
+            aux = board[selI][selJ]
+            board[selI][selJ] = board[i][j]
+            board[i][j] = aux
+            hasSelected = false
+            
+        }else{
+            selI = i
+            selJ = j
+            hasSelected = true
+            
+        }
         
     }
+
     function update () {
         draw()
         control()
     }
-    function match() {
-        
-    }
-    
+
     function control () {
     }
+    var pointSize = 2.1
     function draw () {
         drawBg()
-		var total = size*size
-		var angle = 360/total
-		
+        canvasContext.fillStyle = '#fff'
         for (var i = 0; i < size; i++) {
             for (var j = 0; j < size; j++) {
-				canvasContext.fillStyle = 'hsl('+board[i][j]*angle+', 100%, 50%)'
-                canvasContext.fillRect(j*tile, i*tile, tile, tile)
+                var linha = parseInt(board[i][j]/size, 10)
+                var coluna = parseInt(board[i][j]%size, 10)
+                
+                canvasContext.fillStyle = lvl1[linha][coluna]
+                canvasContext.fillRect(j * tile, i * tile, tile, tile)
+
+                if(hasSelected && selI==i && selJ==j){
+                    canvasContext.fillStyle = '#fff'
+                    canvasContext.fillRect(j * tile, i * tile, tile, tile)
+                    canvasContext.fillStyle = lvl1[linha][coluna]
+                    canvasContext.fillRect(j * tile + 10 , i * tile + 10, tile -20, tile-20)
+                    
+                }
+                
+                if(linha == i && coluna == j){
+                    canvasContext.fillStyle = '#000'
+                    canvasContext.fillRect(j * tile +tile/pointSize, i * tile+tile/pointSize, tile-2*tile/pointSize, tile-2*tile/pointSize)
+                }
+                
             }
         }
-        canvasContext.fillStyle = '#fff'
-        canvasContext.fillText(score,10,40)
     }
+
     function drawBg () {
         canvasContext.fillStyle = '#333'
         canvasContext.fillRect(0,0,canvas.width, canvas.height)
